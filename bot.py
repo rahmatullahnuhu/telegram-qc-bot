@@ -1,102 +1,139 @@
 from telegram import Update
-from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
-import re
+from telegram.ext import (
+    ApplicationBuilder,
+    MessageHandler,
+    CommandHandler,
+    ContextTypes,
+    filters,
+)
+import os
 
-# =========================
+# ==============================
 # BOT TOKEN
-# =========================
+# ==============================
+BOT_TOKEN = os.getenv("8476597907:AAFLmCDvudAmDFWBIKebJvWZsxlTCsPr6Mg")
 
-BOT_TOKEN = "8476597907:AAFLmCDvudAmDFWBIKebJvWZsxlTCsPr6Mg"
-
-# =========================
+# ==============================
 # RESTRICTED WORDS
-# =========================
-
+# ==============================
 RESTRICTED_WORDS = [
 
-    # Contact Related
+    # Communication Related
     "skype",
     "whatsapp",
-    "email",
+    "telegram",
     "messenger",
+    "discord",
+    "zoom",
+    "google meet",
+    "meet",
+    "gmail",
+    "email",
+    "yahoo mail",
+    "contact me",
+    "call me",
+    "phone number",
+    "mobile number",
+    "outside fiverr",
+    "private chat",
+    "direct contact",
+    "personal contact",
+    "reach me",
+    "talk privately",
+    "outside platform",
+    "business deal outside",
+    "send your details",
 
     # Payment Related
     "pay",
     "payment",
     "paypal",
     "payoneer",
-    "bank account",
-    "money",
-    "credit card",
+    "wise",
     "transferwise",
-    "stripe",
+    "bank account",
+    "credit card",
+    "debit card",
+    "money",
+    "money transfer",
+    "crypto",
+    "bitcoin",
+    "invoice",
+    "send money",
 
     # Marketplace Related
-    "peopleperhour",
     "upwork",
     "freelancer",
-
-    # Rating Related
-    "positive feedback",
-    "positive rating",
-    "five star",
-    "negative feedback",
+    "peopleperhour",
+    "guru",
+    "legiit",
+    "marketplace",
+    "other platform",
 ]
 
-# =========================
-# DETECT FUNCTION
-# =========================
+# ==============================
+# START COMMAND
+# ==============================
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "✅ QC Warning Bot is Active & Monitoring Messages."
+    )
 
-async def detect_words(update: Update, context: ContextTypes.DEFAULT_TYPE):
+# ==============================
+# MESSAGE CHECKER
+# ==============================
+async def check_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    # যদি message না থাকে
     if not update.message or not update.message.text:
         return
 
-    # User Message ছোট হাতের করা
-    text = update.message.text.lower()
+    # Lowercase convert
+    message_text = update.message.text.lower()
 
-    matched_words = []
+    # Detect restricted words
+    detected_words = []
 
-    # সব restricted word check
     for word in RESTRICTED_WORDS:
+        if word.lower() in message_text:
+            detected_words.append(word)
 
-        pattern = r'\b' + re.escape(word) + r'\b'
+    # If restricted word found
+    if detected_words:
 
-        matches = re.findall(pattern, text)
+        detected_text = "\n".join(
+            [f"• [{word}]" for word in detected_words]
+        )
 
-        if matches:
-
-            for match in matches:
-
-                formatted_word = f"• [{match}]"
-
-                if formatted_word not in matched_words:
-                    matched_words.append(formatted_word)
-
-    # যদি restricted word detect হয়
-    if matched_words:
-
-        detected_text = "\n".join(matched_words)
-
-        await update.message.reply_text(
-
-            f"⚠️ Restricted word detected.\n"
-            f"Please kindly fix your message.\n\n"
-            f"Detected Words:\n"
+        warning_message = (
+            "⚠️ Restricted word detected.\n"
+            "Please kindly fix your message.\n\n"
+            "Detected Words:\n"
             f"{detected_text}"
         )
 
-# =========================
-# APP START
-# =========================
+        await update.message.reply_text(warning_message)
 
-app = ApplicationBuilder().token(BOT_TOKEN).build()
+# ==============================
+# MAIN FUNCTION
+# ==============================
+def main():
 
-app.add_handler(
-    MessageHandler(filters.TEXT & ~filters.COMMAND, detect_words)
-)
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
 
-print("Bot Running...")
+    # Commands
+    app.add_handler(CommandHandler("start", start))
 
-app.run_polling()
+    # Message Handler
+    app.add_handler(
+        MessageHandler(filters.TEXT & ~filters.COMMAND, check_message)
+    )
+
+    print("✅ QC Warning Bot Running...")
+
+    app.run_polling()
+
+# ==============================
+# RUN BOT
+# ==============================
+if __name__ == "__main__":
+    main()
