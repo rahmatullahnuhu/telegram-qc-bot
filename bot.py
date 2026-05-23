@@ -11,7 +11,7 @@ import os
 # ==============================
 # BOT TOKEN
 # ==============================
-BOT_TOKEN = os.getenv("8476597907:AAFLmCDvudAmDFWBIKebJvWZsxlTCsPr6Mg")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 # ==============================
 # RESTRICTED WORDS
