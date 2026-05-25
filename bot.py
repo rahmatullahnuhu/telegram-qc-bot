@@ -28,13 +28,13 @@ RESTRICTED_WORDS = [
     "google meet",
     "meet",
     "gmail",
-    "number",
     "email",
     "yahoo mail",
     "contact me",
     "call me",
     "phone number",
     "mobile number",
+    "number",
     "outside fiverr",
     "private chat",
     "direct contact",
@@ -88,7 +88,7 @@ async def check_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message or not update.message.text:
         return
 
-    # Lowercase convert
+    # Convert message to lowercase
     message_text = update.message.text.lower()
 
     # Detect restricted words
@@ -97,6 +97,9 @@ async def check_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for word in RESTRICTED_WORDS:
         if word.lower() in message_text:
             detected_words.append(word)
+
+    # Remove duplicate words
+    detected_words = list(set(detected_words))
 
     # If restricted word found
     if detected_words:
