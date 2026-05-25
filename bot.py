@@ -28,6 +28,7 @@ RESTRICTED_WORDS = [
     "google meet",
     "meet",
     "gmail",
+    "number",
     "email",
     "yahoo mail",
     "contact me",
